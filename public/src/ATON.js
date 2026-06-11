@@ -319,14 +319,22 @@ ATON._setupBaseListeners = ()=>{
 
     if (hidden !== undefined) document.addEventListener(visibilityChange, ()=>{
         if (document[hidden]){
-            if (ATON.XR._bPresenting) return;
+            if (ATON.XR._bPresenting) {
+                // [EXT]
+                ATON.fire("XRvisibilityHidden", true);
+                return;
+            }
 
             console.log("Suspend");
             ATON.renderPause();
             ATON._bSuspend = true;
         }
         else {
-            if (ATON.XR._bPresenting) return;
+            if (ATON.XR._bPresenting) {
+                // [EXT]
+                ATON.fire("XRvisibilityHidden", false);
+                return;
+            }
             
             console.log("Resume");
             ATON.renderResume();
@@ -425,7 +433,7 @@ ATON._setupBaseListeners = ()=>{
 
     ATON.on("DoubleTap", (e)=>{
         //console.log(e);
-        ATON.defaultDoubleTapFromScreenCoords(e);
+        //[EXT] ATON.defaultDoubleTapFromScreenCoords(e);
     });
 
 
@@ -633,7 +641,8 @@ ATON.realize = ( bNoRender )=>{
         //canvas: document.getElementById("View3D"),
         
         //antialias: (ATON.device.lowGPU)? false : true,
-        antialias: false,
+        // [EXT]
+        antialias: true,
         alpha: true,     // required for AR
 
         //logarithmicDepthBuffer: true, // issues with postfx (SSAO)
@@ -1160,7 +1169,8 @@ ATON._setupLoadManager = ()=>{
 
     ATON._loadManager.onLoad = ()=>{
 	    console.log( 'Loading complete!');
-        ATON.fire("AllNodeRequestsCompleted");
+        // [EXT]
+        ATON.fire("AllNodeRequestsCompleted", url); 
     };
 
     ATON._loadManager.onProgress = ( url, itemsLoaded, itemsTotal )=>{
@@ -1790,6 +1800,8 @@ ATON.updateLightProbes = ()=>{
     //ATON._updLP();
 
     console.log("LPs updated.");
+    // [EXT]
+    ATON.fire("LPsUpdated");
 };
 
 //==============================================================
@@ -1838,12 +1850,14 @@ ATON.setMainPanorama = (path)=>{
         ATON._mMainPano.layers.disable(ATON.NTYPES.UI);
 
         ATON._mMainPano.raycast = ATON.Utils.VOID_CAST;
+        // [EXT]
+        ATON._mMainPano.visible = false;
         
         ATON.setMainPanoramaRadius(ATON.Nav.STD_FAR * 0.8);
         ///ATON.setMainPanoramaRadius(100.0);
     }
 
-    ATON._mMainPano.visible = true;
+    // [EXT] ATON._mMainPano.visible = true;
 
     // Panoramic Video
     if (ATON.Utils.isVideo(path)){

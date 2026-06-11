@@ -168,7 +168,12 @@ Hide this node (and sub-graph), also invisible to queries (ray casting, picking)
 @example
 myNode.hide()
 */
-hide(){
+// [EXT]
+hide(options){
+    let updateLight= true;
+    if(options)
+        updateLight = typeof options.updateLight === 'boolean' ? options.updateLight : true;
+
     let bPrev = this.visible;
 
     this.visible = false;
@@ -182,7 +187,11 @@ hide(){
     }
 
     if (bPrev){
-        if (this.type === ATON.NTYPES.SCENE) ATON.updateLightProbes();
+        if (this.type === ATON.NTYPES.SCENE) {
+            // [EXT]
+            if(updateLight)
+                ATON.updateLightProbes();
+        }
         ATON.fire("NodeChange",{ nid: this.nid, vis: false });
     }
 
@@ -194,7 +203,12 @@ Show this node (and sub-graph). If pickable, becomes sensible to queries (ray ca
 @example
 myNode.show()
 */
-show(){
+// [EXT]
+show(options){
+    let updateLight= true;
+    if(options)
+        updateLight = typeof options.updateLight === 'boolean' ? options.updateLight : true;
+
     let bPrev = this.visible;
 
     this.visible = true;
@@ -208,7 +222,11 @@ show(){
     }
 
     if (!bPrev){
-        if (this.type === ATON.NTYPES.SCENE) ATON.updateLightProbes();
+        if (this.type === ATON.NTYPES.SCENE) {
+            // [EXT]
+            if(updateLight)
+                ATON.updateLightProbes();
+        }
         ATON.fire("NodeChange",{ nid: this.nid, vis: true });
     }
 
@@ -712,9 +730,16 @@ Note the system will take care of loading the resources in background, and will 
 @example
 myNode.load("mymodel.gltf", ()=>{ console.log("completed!") })
 */
-load(url, onComplete){
+// [EXT]
+load(url, onComplete, options){
     if (url === undefined) return this;
     
+    // [EXT]
+    let startAnimation = true;
+    if(options) {
+        startAnimation = typeof options.startAnimation === 'boolean' ? options.startAnimation : true;
+    }
+
     let N = this;
 
     // Log request
@@ -800,11 +825,13 @@ load(url, onComplete){
             else N.add( model );
 
             // animations
-            ATON.Utils.registerAniMixers(N, data);
+            // [EXT]
+            ATON.Utils.registerAniMixers(N, data, startAnimation);
 
             // Copyrigth extraction
             ATON.CC.extract(data);
-
+            // [EXT]
+            ATON.fire("ModelLoaded", {url: url, model: model});
             resolve(model);
             //console.log("Model "+url+" loaded");
             console.log("%cModel loaded","color:green");

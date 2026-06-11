@@ -646,21 +646,20 @@ Utils.cleanupVisitor = ( object )=>{
     object = null;
 };
 
-Utils.registerAniMixers = (N, data)=>{
+// [EXT]
+Utils.registerAniMixers = (N, data, startAnimation)=>{
     let model = data.scene || data.scene[0];
-    let bAnimations = false;
 
+    // [EXT]
     if (data.animations === undefined) return;
 
     let mixer = new THREE.AnimationMixer( model );
-    data.animations.forEach((clip)=>{
-        mixer.clipAction( clip ).play();
-        //console.log(mixer.clipAction( clip ));
-        //console.log(N);
-        bAnimations = true;
-    });
-
-    if (!bAnimations) return;
+    data.animations.forEach((clip)=>{mixer.clipAction( clip )});
+    if(startAnimation) {
+        mixer._actions.forEach(action => {
+            action.play();
+        });
+    }
 
     if (N.type === ATON.NTYPES.SCENE) model.traverse(o => {
         o.raycast = ATON.Utils.VOID_CAST;

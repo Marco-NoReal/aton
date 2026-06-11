@@ -155,6 +155,10 @@ update(){
     //ATON._mainRoot.position.set(-this.pos.x,-this.pos.y,-this.pos.z);
     //ATON._render();
     
+    // [EXT]
+    if(ATON._mMainPano)
+        ATON._mMainPano.visible = true;
+
     this._envtex = ATON._pmremGenerator.fromScene(
         ATON._mainRoot,
         0, 
@@ -166,6 +170,10 @@ update(){
         }
     ).texture;
     
+    // [EXT]
+    if(ATON._mMainPano)
+        ATON._mMainPano.visible = false;
+
     ///ATON._mainRoot.position.set(0,0,0);
     //ATON._rootVisibleGlobal.position.set(0,0,0);
 
